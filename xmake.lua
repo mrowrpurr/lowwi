@@ -1,8 +1,16 @@
 add_rules("mode.debug", "mode.release")
 set_languages("c++23")
 
+option("build_examples")
+    set_default(true)
+    set_showmenu(true)
+    set_description("Build example binaries")
+option_end()
+
 add_requires("onnxruntime")
-add_requires("miniaudio")
+if has_config("build_examples") then
+    add_requires("miniaudio")
+end
 
 target("lowwi")
     set_kind("static")
@@ -11,6 +19,7 @@ target("lowwi")
     add_includedirs("src", {public = true})
     add_packages("onnxruntime", {public = true})
 
+if has_config("build_examples") then
 target("mic")
     set_kind("binary")
     add_files("example/mic/*.cpp")
@@ -28,3 +37,4 @@ target("mic")
         -- Copy bundled models next to the executable
         os.cp("$(projectdir)/models", path.join(target:targetdir(), "models"))
     end)
+end
